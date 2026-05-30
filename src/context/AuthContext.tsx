@@ -1,12 +1,19 @@
 import { createContext, useEffect, useState, useCallback } from 'react';
-import { supabase } from '../services/supabase';
-import { fetchProfile } from '../services/api';
+import { registerUser, loginUser, logoutUser, fetchProfile } from '../services/api';
 import type { ProfileRow } from '../services/api';
-import type { User, Session } from '@supabase/supabase-js';
+
+interface AuthUser {
+  id: string;
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatar: string;
+}
 
 interface AuthState {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
+  session: any;
   profile: ProfileRow | null;
   loading: boolean;
   signUp: (email: string, password: string, name: string, role: string) => Promise<void>;
@@ -18,8 +25,7 @@ interface AuthState {
 export const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,65 +33,74 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const p = await fetchProfile();
       setProfile(p);
+      if (p) {
+        setUser({
+          id: p._id || p.id,
+          _id: p._id || p.id,
+          name: p.name,
+          email: p.email,
+          role: p.role,
+          avatar: p.avatar,
+        });
+      }
     } catch {
       setProfile(null);
     }
   }, []);
 
   useEffect(() => {
-    // get initial session
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        refreshProfile();
-      }
+    const token = localStorage.getItem('token');
+    if (token) {
+      refreshProfile().finally(() => setLoading(false));
+    } else {
       setLoading(false);
-    });
-
-    // listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        (async () => { await refreshProfile(); })();
-      } else {
-        setProfile(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [refreshProfile]);
+    }
+  }, []);
 
   async function signUp(email: string, password: string, name: string, role: string) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-
-    // create profile row
-    if (data.user) {
-      const { error: profileErr } = await supabase.from('profiles').insert({
-        id: data.user.id,
-        name,
-        email,
-        role,
-      });
-      if (profileErr) throw profileErr;
-    }
+    const data = await registerUser(name, email, password, role);
+    setUser({
+      id: data.user.id,
+      _id: data.user.id,
+      name: data.user.name,
+      email: data.user.email,
+      role: data.user.role,
+      avatar: data.user.avatar || '',
+    });
+    setProfile(data.user);
+    await refreshProfile();
   }
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const data = await loginUser(email, password);
+    setUser({
+      id: data.user.id,
+      _id: data.user.id,
+      name: data.user.name,
+      email: data.user.email,
+      role: data.user.role,
+      avatar: data.user.avatar || '',
+    });
+    setProfile(data.user);
   }
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    await logoutUser();
+    setUser(null);
     setProfile(null);
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{
+      user,
+      session: null,
+      profile,
+      loading,
+      signUp,
+      signIn,
+      signOut,
+      refreshProfile
+    }}>
       {children}
     </AuthContext.Provider>
   );

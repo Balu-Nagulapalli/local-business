@@ -30,7 +30,6 @@ import ManageUsers from './pages/admin/ManageUsers';
 import ManageReviews from './pages/admin/ManageReviews';
 import ManageCategories from './pages/admin/ManageCategories';
 
-// wrapper: navbar + footer for public pages
 function PublicLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-surface-1">
@@ -43,9 +42,9 @@ function PublicLayout() {
   );
 }
 
-// wrapper: navbar + footer for dashboard pages (no admin sidebar)
 function DashboardLayout() {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext)!;
+  if (loading) return null;
   if (!user) return <Navigate to="/login" replace />;
   return (
     <div className="min-h-screen flex flex-col bg-surface-1">
@@ -58,9 +57,9 @@ function DashboardLayout() {
   );
 }
 
-// wrapper: admin with sidebar
 function AdminLayout() {
-  const { profile } = useContext(AuthContext);
+  const { profile, loading } = useContext(AuthContext)!;
+  if (loading) return null;
   if (!profile || profile.role !== 'admin') return <Navigate to="/" replace />;
   return (
     <div className="min-h-screen flex bg-surface-1">
@@ -77,7 +76,6 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        {/* custom toast — bottom-left at 14px, not generic bottom-right */}
         <Toaster
           position="bottom-left"
           toastOptions={{
@@ -93,7 +91,6 @@ function App() {
         />
 
         <Routes>
-          {/* public pages */}
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/businesses" element={<Businesses />} />
@@ -104,7 +101,6 @@ function App() {
             <Route path="/register" element={<Register />} />
           </Route>
 
-          {/* user dashboard */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route path="saved" element={<SavedBusinesses />} />
             <Route path="reviews" element={<MyReviews />} />
@@ -112,7 +108,6 @@ function App() {
             <Route index element={<Navigate to="saved" replace />} />
           </Route>
 
-          {/* owner dashboard */}
           <Route path="/owner" element={<DashboardLayout />}>
             <Route path="listings" element={<MyListings />} />
             <Route path="listings/new" element={<AddBusiness />} />
@@ -121,7 +116,6 @@ function App() {
             <Route index element={<Navigate to="listings" replace />} />
           </Route>
 
-          {/* admin */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOverview />} />
             <Route path="businesses" element={<ManageBusinesses />} />
@@ -130,7 +124,6 @@ function App() {
             <Route path="categories" element={<ManageCategories />} />
           </Route>
 
-          {/* catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

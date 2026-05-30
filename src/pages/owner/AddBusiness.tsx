@@ -79,7 +79,6 @@ export default function AddBusiness() {
         <h1 className="font-playfair text-3xl font-bold text-brand-dark mb-6">Add Your Business</h1>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* basic info */}
           <div className="bg-white rounded-lg p-6 border border-surface-3 space-y-4">
             <h2 className="font-playfair text-lg font-semibold text-brand-dark">Basic Information</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -114,7 +113,6 @@ export default function AddBusiness() {
             </div>
           </div>
 
-          {/* address */}
           <div className="bg-white rounded-lg p-6 border border-surface-3 space-y-4">
             <h2 className="font-playfair text-lg font-semibold text-brand-dark">Address</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -141,7 +139,6 @@ export default function AddBusiness() {
             </div>
           </div>
 
-          {/* contact */}
           <div className="bg-white rounded-lg p-6 border border-surface-3 space-y-4">
             <h2 className="font-playfair text-lg font-semibold text-brand-dark">Contact</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -164,7 +161,6 @@ export default function AddBusiness() {
             </div>
           </div>
 
-          {/* location */}
           <div className="bg-white rounded-lg p-6 border border-surface-3 space-y-4">
             <h2 className="font-playfair text-lg font-semibold text-brand-dark">Location (optional)</h2>
             <div className="grid grid-cols-2 gap-4">

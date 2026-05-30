@@ -1,7 +1,7 @@
 interface StatsCardProps {
   label: string;
   value: string | number;
-  accent?: string; // hex color for top border
+  accent?: string;
 }
 
 export default function StatsCard({ label, value, accent = '#E8470A' }: StatsCardProps) {

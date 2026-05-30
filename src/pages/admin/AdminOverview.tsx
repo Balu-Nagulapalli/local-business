@@ -38,7 +38,6 @@ export default function AdminOverview() {
           <StatsCard label="Pending Approval" value={stats.pendingBusinesses} accent="#EAB308" />
         </div>
 
-        {/* quick actions */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-white border border-surface-3 rounded-lg p-5">
             <h3 className="font-playfair text-lg font-semibold text-brand-dark">Pending Businesses</h3>

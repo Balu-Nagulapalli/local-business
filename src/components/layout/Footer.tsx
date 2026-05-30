@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
 
-// unequal columns on purpose — 4-col but not evenly weighted
 export default function Footer() {
   return (
     <footer className="bg-brand-dark text-white/70 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-          {/* Col 1 — wider, brand stuff */}
           <div className="col-span-2 md:col-span-1 md:pr-8">
             <Link to="/" className="font-playfair italic text-2xl text-white">
               Localé
@@ -17,7 +15,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Col 2 — explore */}
           <div>
             <h4 className="font-dm font-semibold text-white text-sm uppercase tracking-wider mb-4">
               Explore
@@ -32,7 +29,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 3 — for business owners, narrower */}
           <div>
             <h4 className="font-dm font-semibold text-white text-sm uppercase tracking-wider mb-4">
               For Owners
@@ -44,7 +40,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Col 4 — contact + legal */}
           <div>
             <h4 className="font-dm font-semibold text-white text-sm uppercase tracking-wider mb-4">
               Company

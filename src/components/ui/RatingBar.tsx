@@ -1,5 +1,5 @@
 interface RatingBarProps {
-  star: number; // 5, 4, 3, 2, 1
+  star: number;
   percentage: number;
   count: number;
 }

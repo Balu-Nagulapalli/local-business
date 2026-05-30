@@ -30,7 +30,6 @@ export default function Businesses() {
         limit,
       });
 
-      // client-side sort since supabase query sort is limited
       let sorted = result.businesses;
       if (filters.sortBy === 'reviews') {
         sorted = [...sorted].sort((a, b) => b.total_reviews - a.total_reviews);
@@ -40,7 +39,6 @@ export default function Businesses() {
         sorted = [...sorted].sort((a, b) => b.total_views - a.total_views);
       }
 
-      // client-side price filter
       if (filters.priceRange) {
         sorted = sorted.filter(b => b.price_range === filters.priceRange);
       }
@@ -56,7 +54,6 @@ export default function Businesses() {
 
   useEffect(() => { loadBusinesses(); }, [loadBusinesses]);
 
-  // reset page when filters change
   function handleFilterChange(newFilters: FilterState) {
     setFilters(newFilters);
     setPage(1);
@@ -67,7 +64,6 @@ export default function Businesses() {
   return (
     <div className="pt-20 min-h-screen bg-surface-1">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* page header */}
         <div className="mb-8">
           <h1 className="font-playfair text-3xl font-bold text-brand-dark">All Businesses</h1>
           <p className="font-dm text-sm text-brand-muted mt-1">
@@ -75,13 +71,11 @@ export default function Businesses() {
           </p>
         </div>
 
-        {/* two-column: filters + grid */}
         <div className="flex flex-col md:flex-row gap-8">
           <FilterSidebar onFilter={handleFilterChange} currentFilters={filters} />
           <div className="flex-1">
             <BusinessGrid businesses={businesses} loading={loading} />
 
-            {/* pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button

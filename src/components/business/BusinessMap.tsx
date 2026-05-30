@@ -6,18 +6,27 @@ interface BusinessMapProps {
   name: string;
 }
 
-// lazy-loaded map — react-leaflet needs window which doesn't exist at import time
-// so we dynamically create the map after mount
 export default function BusinessMap({ lat, lng, name }: BusinessMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
 
   useEffect(() => {
+    return () => {
+      const container = document.getElementById('map');
+      if (container) {
+        container._leaflet_id = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    // dynamic import to avoid SSR issues
+    const container = mapRef.current;
+    if ((container as any)._leaflet_id) return;
+
     import('leaflet').then(L => {
-      if (!mapRef.current) return;
+      if (!mapRef.current || (mapRef.current as any)._leaflet_id) return;
 
       const map = L.map(mapRef.current).setView([lat, lng], 14);
       mapInstanceRef.current = map;
@@ -27,7 +36,6 @@ export default function BusinessMap({ lat, lng, name }: BusinessMapProps) {
         maxZoom: 19,
       }).addTo(map);
 
-      // custom marker icon — orange instead of default blue
       const icon = L.divIcon({
         html: `<div style="background:#E8470A;width:14px;height:14px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,
         className: '',
@@ -39,7 +47,6 @@ export default function BusinessMap({ lat, lng, name }: BusinessMapProps) {
         .addTo(map)
         .bindPopup(`<strong style="font-family:DM Sans,sans-serif">${name}</strong>`);
 
-      // invalidateSize after a tick — leaflet hates hidden containers
       setTimeout(() => map.invalidateSize(), 100);
     });
 
@@ -54,8 +61,9 @@ export default function BusinessMap({ lat, lng, name }: BusinessMapProps) {
   return (
     <div
       ref={mapRef}
+      id="map"
       className="w-full h-[300px] rounded-lg bg-surface-3"
-      style={{ willChange: 'transform' }} // this flickers on Safari, added will-change as workaround
+      style={{ willChange: 'transform' }}
     />
   );
 }

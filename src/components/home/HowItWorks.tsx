@@ -26,12 +26,10 @@ export default function HowItWorks() {
       <div className="grid md:grid-cols-3 gap-8 md:gap-12">
         {STEPS.map((step, idx) => (
           <div key={step.num} className="relative pl-2">
-            {/* decorative faded number */}
             <span className="step-number -top-4 -left-2 font-dm">
               {step.num}
             </span>
 
-            {/* connecting dotted line between steps */}
             {idx < STEPS.length - 1 && (
               <div className="hidden md:block absolute top-8 -right-6 w-12 border-t-2 border-dashed border-surface-3" />
             )}

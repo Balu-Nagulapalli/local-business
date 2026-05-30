@@ -28,7 +28,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // close mobile menu on route change
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
   const cityRef = useOutsideClick(() => setCityDropdown(false));
@@ -54,7 +53,6 @@ export default function Navbar() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Left: wordmark + city selector */}
             <div className="flex items-center gap-3">
               <Link to="/" className="flex items-center gap-2">
                 <span className="font-playfair italic text-2xl text-white tracking-tight">
@@ -88,7 +86,6 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Center: search (desktop) */}
             <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 max-w-md mx-8">
               <div className="search-underline relative w-full">
                 <input
@@ -102,7 +99,6 @@ export default function Navbar() {
               </div>
             </form>
 
-            {/* Right: nav links + auth */}
             <div className="hidden md:flex items-center gap-6">
               <Link to="/businesses" className="text-white/70 hover:text-white text-sm font-dm transition-colors">
                 Browse
@@ -179,7 +175,6 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile: hamburger */}
             <button
               onClick={() => setMobileOpen(true)}
               className="md:hidden text-white p-2"
@@ -190,7 +185,6 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile menu */}
       <MobileMenu
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}

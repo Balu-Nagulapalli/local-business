@@ -35,7 +35,6 @@ export default function ContactSidebar({ business }: ContactSidebarProps) {
 
   return (
     <div className="space-y-6">
-      {/* contact info card */}
       <div className="bg-surface-2 rounded-lg p-5">
         <h3 className="font-playfair text-lg font-semibold text-brand-dark mb-4">Contact</h3>
 
@@ -70,7 +69,6 @@ export default function ContactSidebar({ business }: ContactSidebarProps) {
         )}
       </div>
 
-      {/* send message form */}
       <div className="bg-surface-2 rounded-lg p-5">
         <h3 className="font-playfair text-lg font-semibold text-brand-dark mb-4">
           Send Message

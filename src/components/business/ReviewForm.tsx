@@ -45,7 +45,6 @@ export default function ReviewForm({ businessId, onSubmitted }: ReviewFormProps)
         Write a Review
       </h4>
 
-      {/* star selector */}
       <div className="flex items-center gap-1 mb-4">
         {[1, 2, 3, 4, 5].map(star => (
           <button

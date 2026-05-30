@@ -20,14 +20,12 @@ export default function MobileMenu({ isOpen, onClose, user, profile, onSignOut, 
 
   return (
     <div className="fixed inset-0 z-[60] bg-brand-dark">
-      {/* close btn */}
       <div className="flex justify-end p-4">
         <button onClick={onClose} className="text-white p-2">
           <X className="w-6 h-6" />
         </button>
       </div>
 
-      {/* search */}
       <form onSubmit={(e) => { onSearchSubmit(e); onClose(); }} className="px-6 mb-8">
         <div className="relative">
           <input
@@ -41,7 +39,6 @@ export default function MobileMenu({ isOpen, onClose, user, profile, onSignOut, 
         </div>
       </form>
 
-      {/* links with staggered animation */}
       <nav className="px-6 space-y-1">
         {[
           { to: '/', label: 'Home' },
@@ -64,7 +61,6 @@ export default function MobileMenu({ isOpen, onClose, user, profile, onSignOut, 
         ))}
       </nav>
 
-      {/* auth section */}
       <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-white/10">
         {user ? (
           <div className="space-y-3">

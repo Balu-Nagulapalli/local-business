@@ -1,4 +1,3 @@
-// text-based skeletons matching layout — not generic grey rectangles
 export function SkeletonBusinessCard() {
   return (
     <div className="py-5 border-b border-surface-3 animate-pulse">

@@ -31,7 +31,6 @@ export default function FilterSidebar({ onFilter, currentFilters }: FilterSideba
   return (
     <aside className="w-full md:w-56 flex-shrink-0">
       <div className="space-y-5">
-        {/* city */}
         <div>
           <label className="text-xs font-mono text-brand-muted uppercase tracking-wider">City</label>
           <select
@@ -43,7 +42,6 @@ export default function FilterSidebar({ onFilter, currentFilters }: FilterSideba
           </select>
         </div>
 
-        {/* category */}
         <div>
           <label className="text-xs font-mono text-brand-muted uppercase tracking-wider">Category</label>
           <select
@@ -53,12 +51,11 @@ export default function FilterSidebar({ onFilter, currentFilters }: FilterSideba
           >
             <option value="">All Categories</option>
             {categories.map(c => (
-              <option key={c.id} value={c.slug}>{c.name}</option>
+              <option key={c._id || c.id} value={c.slug}>{c.name}</option>
             ))}
           </select>
         </div>
 
-        {/* price */}
         <div>
           <label className="text-xs font-mono text-brand-muted uppercase tracking-wider">Price Range</label>
           <select
@@ -70,7 +67,6 @@ export default function FilterSidebar({ onFilter, currentFilters }: FilterSideba
           </select>
         </div>
 
-        {/* sort */}
         <div>
           <label className="text-xs font-mono text-brand-muted uppercase tracking-wider">Sort By</label>
           <select

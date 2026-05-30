@@ -16,7 +16,6 @@ export default function FeaturedSection() {
 
   return (
     <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* heading with decorative left orange line */}
       <div className="flex items-stretch gap-3 mb-8">
         <div className="w-1 bg-brand-orange rounded" />
         <div>
@@ -29,12 +28,11 @@ export default function FeaturedSection() {
         </div>
       </div>
 
-      {/* horizontal scroll list */}
       <div className="flex gap-5 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonFeaturedCard key={i} />)
           : businesses.map(biz => (
-              <BusinessCard key={biz.id} business={biz} variant="featured" />
+              <BusinessCard key={(biz as any)._id || biz.id} business={biz} variant="featured" />
             ))
         }
       </div>

@@ -56,7 +56,7 @@ export default function MyListings() {
         ) : (
           <div className="space-y-3">
             {listings.map(biz => (
-              <div key={biz.id} className="bg-white border border-surface-3 rounded-lg p-5 flex items-center justify-between">
+              <div key={biz._id || biz.id} className="bg-white border border-surface-3 rounded-lg p-5 flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
                     <h3 className="font-playfair text-lg font-semibold text-brand-dark truncate">

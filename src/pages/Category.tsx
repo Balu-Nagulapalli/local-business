@@ -34,7 +34,6 @@ export default function CategoryPage() {
 
   return (
     <div className="pt-20 min-h-screen bg-surface-1">
-      {/* category hero banner */}
       {category && (
         <div className="relative h-48 overflow-hidden">
           {category.cover_image ? (

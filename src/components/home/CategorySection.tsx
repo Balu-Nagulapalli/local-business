@@ -31,10 +31,9 @@ export default function CategorySection() {
         Explore by Category
       </h2>
 
-      {/* mobile: horizontal scroll, desktop: grid */}
       <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-4 px-4 md:grid md:grid-cols-4 md:overflow-visible md:mx-0 md:px-0">
         {categories.map((cat, idx) => (
-          <div key={cat.id} className="flex-shrink-0 w-[200px] md:w-auto">
+          <div key={cat._id || cat.id} className="flex-shrink-0 w-[200px] md:w-auto">
             <CategoryTile category={cat} featured={idx === 0} />
           </div>
         ))}

@@ -29,12 +29,10 @@ export default function BusinessGrid({ businesses, loading }: BusinessGridProps)
     );
   }
 
-  // alternating card style — first card with image left, third with image right
-  // breaks the grid rhythm intentionally as per design spec
   return (
     <div className="divide-y divide-surface-3">
       {businesses.map((biz, idx) => (
-        <div key={biz.id} className={idx % 3 === 2 ? 'sm:flex-row-reverse' : ''}>
+        <div key={biz._id || biz.id} className={idx % 3 === 2 ? 'sm:flex-row-reverse' : ''}>
           <BusinessCard business={biz} />
         </div>
       ))}

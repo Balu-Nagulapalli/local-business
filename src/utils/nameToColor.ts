@@ -1,11 +1,9 @@
-// hashes a name to a hue value for avatar backgrounds
-// avoids purple/indigo range (260-300) as per design rules
 const COLOR_RANGES = [
-  [0, 30],    // reds/oranges
-  [30, 60],   // oranges/yellows
-  [60, 170],  // greens/teals
-  [170, 220], // blues
-  [330, 360], // pinks/reds
+  [0, 30],
+  [30, 60],
+  [60, 170],
+  [170, 220],
+  [330, 360],
 ];
 
 function hashStr(str: string): number {

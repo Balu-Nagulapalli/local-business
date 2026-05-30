@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { fetchAllReviews, adminDeleteReview, adminToggleReviewVisibility } from '../../services/api';
-import type { ReviewRow } from '../../services/api';
 import DataTable from '../../components/admin/DataTable';
 import { timeAgo } from '../../utils/timeAgo';
 
@@ -23,14 +22,6 @@ export default function ManageReviews() {
 
   useEffect(() => { loadReviews(); }, [loadReviews]);
 
-  async function toggleVisibility(id: string, isHidden: boolean) {
-    try {
-      await adminToggleReviewVisibility(id, !isHidden);
-      toast.success(!isHidden ? 'Review hidden' : 'Review shown');
-      loadReviews();
-    } catch { toast.error('Failed to update'); }
-  }
-
   async function deleteReviewAction(id: string) {
     if (!confirm('Delete this review permanently?')) return;
     try {
@@ -48,17 +39,17 @@ export default function ManageReviews() {
       <span className="font-dm text-sm">{row.title || '–'}</span>
     )},
     { key: 'business', label: 'Business', render: (row: any) => (
-      <span className="font-dm text-sm">{row.businesses?.name || '–'}</span>
+      <span className="font-dm text-sm">{row.business?.name ?? 'Unknown'}</span>
     )},
     { key: 'user', label: 'By', render: (row: any) => (
-      <span className="font-dm text-sm">{row.profiles?.name || 'Unknown'}</span>
+      <span className="font-dm text-sm">{row.user?.name ?? row.profiles?.name ?? 'Unknown'}</span>
     )},
     { key: 'created_at', label: 'Date', sortable: true, render: (row: any) => (
-      <span className="font-mono text-[10px] text-brand-muted">{timeAgo(row.created_at)}</span>
+      <span className="font-mono text-[10px] text-brand-muted">{timeAgo(row.createdAt ?? row.created_at)}</span>
     )},
     { key: 'is_hidden', label: 'Hidden', render: (row: any) => (
-      <span className={`font-mono text-xs ${row.is_hidden ? 'text-red-600' : 'text-green-600'}`}>
-        {row.is_hidden ? 'yes' : 'no'}
+      <span className={`font-mono text-xs ${(row.isHidden ?? row.is_hidden ?? false) ? 'text-red-600' : 'text-green-600'}`}>
+        {(row.isHidden ?? row.is_hidden ?? false) ? 'yes' : 'no'}
       </span>
     )},
   ];
@@ -81,13 +72,13 @@ export default function ManageReviews() {
             actions={(row) => (
               <div className="flex items-center gap-3">
                 <button
-                  onClick={() => toggleVisibility(row.id, row.is_hidden)}
-                  className={`text-xs font-dm hover:underline ${row.is_hidden ? 'text-green-600' : 'text-yellow-600'}`}
+                  onClick={() => adminToggleReviewVisibility(row._id ?? row.id, !(row.isHidden ?? row.is_hidden))}
+                  className={`text-xs font-dm hover:underline ${(row.isHidden ?? row.is_hidden) ? 'text-green-600' : 'text-yellow-600'}`}
                 >
-                  {row.is_hidden ? 'Show' : 'Hide'}
+                  {(row.isHidden ?? row.is_hidden) ? 'Show' : 'Hide'}
                 </button>
                 <button
-                  onClick={() => deleteReviewAction(row.id)}
+                  onClick={() => deleteReviewAction(row._id ?? row.id)}
                   className="text-xs font-dm text-red-600 hover:underline"
                 >
                   Delete

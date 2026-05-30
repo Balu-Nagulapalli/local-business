@@ -16,7 +16,7 @@ import BusinessCard from '../components/ui/BusinessCard';
 import { useAuth } from '../hooks/useAuth';
 
 function getRatingDistribution(reviews: ReviewRow[]): number[] {
-  const dist = [0, 0, 0, 0, 0]; // index 0 = 1-star, index 4 = 5-star
+  const dist = [0, 0, 0, 0, 0];
   reviews.forEach(r => { dist[r.rating - 1]++; });
   return dist;
 }
@@ -36,21 +36,18 @@ export default function BusinessDetail() {
       const biz = await fetchBusinessBySlug(slug);
       if (!biz) return;
       setBusiness(biz);
+      const businessId = biz._id ?? biz.id;
 
-      // track view
-      incrementBusinessViews(biz.id);
+      incrementBusinessViews(businessId);
 
-      // load reviews
-      const revs = await fetchReviews(biz.id);
+      const revs = await fetchReviews(businessId);
       setReviews(revs);
 
-      // check if saved
       if (user) {
-        const isSaved = await isBusinessSaved(biz.id);
+        const isSaved = await isBusinessSaved(businessId);
         setSaved(isSaved);
       }
 
-      // load similar businesses (same category, different biz)
       if (biz.category_id) {
         const { businesses } = await fetchBusinesses({ category: biz.categories?.slug, limit: 3 });
         setSimilar(businesses.filter(b => b.id !== biz.id).slice(0, 3));
@@ -68,7 +65,7 @@ export default function BusinessDetail() {
     if (!user) { toast.error('Sign in to save businesses'); return; }
     if (!business) return;
     try {
-      const isSaved = await toggleSaveBusiness(business.id);
+      const isSaved = await toggleSaveBusiness(business._id ?? business.id);
       setSaved(isSaved);
       toast.success(isSaved ? 'Business saved' : 'Business removed from saved');
     } catch { toast.error('Failed to update saved list'); }
@@ -104,7 +101,6 @@ export default function BusinessDetail() {
 
   return (
     <div className="pt-16 min-h-screen bg-surface-1">
-      {/* cover image — full width, 400px */}
       <div className="relative h-[400px] overflow-hidden">
         {business.cover_image ? (
           <img src={business.cover_image} alt={business.name} className="w-full h-full object-cover" />
@@ -113,7 +109,6 @@ export default function BusinessDetail() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent" />
 
-        {/* floating card over image bottom */}
         <div className="absolute bottom-0 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
             <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 max-w-2xl">
@@ -141,19 +136,16 @@ export default function BusinessDetail() {
               </div>
               <div className="flex items-center gap-4 mt-3">
                 <StarRating rating={business.avg_rating} reviewCount={business.total_reviews} />
-                <PriceRange range={business.price_range} />
+                <PriceRange range={business.priceRange ?? business.price_range ?? ''} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* main content — 2-column layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* left column 65% */}
           <div className="flex-1 lg:max-w-[65%]">
-            {/* quick info bar */}
             <div className="flex items-center gap-4 text-sm font-dm text-brand-muted mb-6">
               <span className="flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
@@ -161,7 +153,6 @@ export default function BusinessDetail() {
               </span>
             </div>
 
-            {/* description */}
             <section className="mb-10">
               <h2 className="font-playfair text-xl font-semibold text-brand-dark mb-3">About</h2>
               <p className="font-dm text-sm text-txt-secondary leading-relaxed">
@@ -169,7 +160,6 @@ export default function BusinessDetail() {
               </p>
             </section>
 
-            {/* hours table */}
             <section className="mb-10">
               <h2 className="font-playfair text-xl font-semibold text-brand-dark mb-3">Opening Hours</h2>
               <div className="bg-surface-2 rounded-lg overflow-hidden">
@@ -189,7 +179,6 @@ export default function BusinessDetail() {
               </div>
             </section>
 
-            {/* photo gallery */}
             {business.images && business.images.length > 0 && (
               <section className="mb-10">
                 <h2 className="font-playfair text-xl font-semibold text-brand-dark mb-3">Photos</h2>
@@ -197,13 +186,10 @@ export default function BusinessDetail() {
               </section>
             )}
 
-            {/* reviews section */}
             <section className="mb-10">
               <h2 className="font-playfair text-xl font-semibold text-brand-dark mb-4">Reviews</h2>
 
-              {/* rating summary */}
               <div className="flex items-start gap-8 mb-6">
-                {/* big number */}
                 <div className="text-center">
                   <span className="font-playfair text-5xl font-bold text-brand-dark">
                     {business.avg_rating > 0 ? business.avg_rating.toFixed(1) : '–'}
@@ -212,7 +198,6 @@ export default function BusinessDetail() {
                   <p className="font-mono text-xs text-brand-muted mt-1">{business.total_reviews} reviews</p>
                 </div>
 
-                {/* rating bars */}
                 <div className="flex-1 space-y-1.5">
                   {[5, 4, 3, 2, 1].map(star => {
                     const count = dist[star - 1] || 0;
@@ -224,28 +209,25 @@ export default function BusinessDetail() {
                 </div>
               </div>
 
-              {/* review form */}
-              {user && <ReviewForm businessId={business.id} onSubmitted={loadData} />}
+              {user && <ReviewForm businessId={business._id ?? business.id} onSubmitted={loadData} />}
 
-              {/* review cards */}
               <div className="divide-y divide-surface-3">
-                {reviews.map(rev => (
-                  <ReviewCard key={rev.id} reviewEntry={rev} />
+                {reviews.map(review => (
+                  <ReviewCard key={review._id || review.id} reviewEntry={review} />
                 ))}
               </div>
             </section>
           </div>
 
-          {/* right column 35% — sticky */}
           <div className="lg:w-[35%] flex-shrink-0">
             <div className="lg:sticky lg:top-24 space-y-6">
               <ContactSidebar business={business} />
 
-              {/* map */}
               {business.location?.lat && business.location?.lng && (
                 <div>
                   <h3 className="font-playfair text-lg font-semibold text-brand-dark mb-3">Location</h3>
                   <BusinessMap
+                    key={business.id}
                     lat={business.location.lat}
                     lng={business.location.lng}
                     name={business.name}
@@ -253,7 +235,6 @@ export default function BusinessDetail() {
                 </div>
               )}
 
-              {/* similar businesses */}
               {similar.length > 0 && (
                 <div>
                   <h3 className="font-playfair text-lg font-semibold text-brand-dark mb-3">Similar Nearby</h3>

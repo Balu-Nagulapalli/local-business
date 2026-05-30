@@ -1,8 +1,8 @@
 interface PriceRangeProps {
-  range: string; // ₹, ₹₹, ₹₹₹, ₹₹₹₹
+  range?: string;
 }
 
-export default function PriceRange({ range }: PriceRangeProps) {
+export default function PriceRange({ range = '' }: PriceRangeProps) {
   const len = range.length;
   return (
     <span className="font-mono text-sm">

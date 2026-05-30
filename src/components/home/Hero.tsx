@@ -22,7 +22,6 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
-      {/* full-bleed background with gradient overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -32,7 +31,6 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-b from-brand-dark/60 via-brand-dark/50 to-brand-dark/80" />
       </div>
 
-      {/* content */}
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
         <h1 className="font-playfair text-4xl sm:text-5xl md:text-[56px] font-bold text-white leading-[1.15] tracking-tight">
           Find the best local<br />businesses near you
@@ -41,12 +39,10 @@ export default function Hero() {
           Trusted reviews from real people in your city
         </p>
 
-        {/* search bar */}
         <form
           onSubmit={handleSearch}
           className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center bg-white rounded-lg overflow-hidden shadow-lg max-w-2xl mx-auto"
         >
-          {/* city selector */}
           <select
             value={city}
             onChange={e => setCity(e.target.value)}
@@ -57,7 +53,6 @@ export default function Hero() {
             ))}
           </select>
 
-          {/* category selector */}
           <select
             value={category}
             onChange={e => setCategory(e.target.value)}
@@ -68,7 +63,6 @@ export default function Hero() {
             ))}
           </select>
 
-          {/* search input */}
           <div className="flex-1 px-4 py-3">
             <input
               type="text"
@@ -79,7 +73,6 @@ export default function Hero() {
             />
           </div>
 
-          {/* search button */}
           <button
             type="submit"
             className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 py-3 font-dm font-medium text-sm transition-colors flex items-center gap-2 justify-center"
@@ -89,7 +82,6 @@ export default function Hero() {
           </button>
         </form>
 
-        {/* floating stat pills */}
         <div className="mt-8 flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
           {[
             { val: '4,200+', label: 'Businesses' },
