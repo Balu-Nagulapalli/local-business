@@ -53,11 +53,15 @@ exports.getOne = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
+    console.log('Create business body:', req.body);
     const slug = slugify(req.body.name);
     const business = await Business.create({ ...req.body, slug, owner: req.user._id });
     await Category.findByIdAndUpdate(req.body.category, { $inc: { businessCount: 1 } });
     res.status(201).json(business);
-  } catch (err) { next(err); }
+  } catch (err) {
+    console.error('Create business error:', err.message);
+    next(err);
+  }
 };
 
 exports.update = async (req, res, next) => {

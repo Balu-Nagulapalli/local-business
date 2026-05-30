@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { fetchAllBusinesses, adminUpdateBusiness } from '../../services/api';
+import api, { fetchAllBusinesses, adminUpdateBusiness } from '../../services/api';
 import type { BusinessRow } from '../../services/api';
 import DataTable from '../../components/admin/DataTable';
 
@@ -22,29 +22,52 @@ export default function ManageBusinesses() {
 
   useEffect(() => { loadBusinesses(); }, [loadBusinesses]);
 
-  async function approveBusiness(id: string) {
+  async function handleApprove(business: any) {
     try {
-      await adminUpdateBusiness(id, { status: 'active', is_approved: true });
+      await adminUpdateBusiness(business._id || business.id, {
+        isApproved: true,
+        status: 'active',
+      });
       toast.success('Business approved');
       loadBusinesses();
     } catch { toast.error('Failed to approve'); }
   }
 
-  async function rejectBusiness(id: string) {
+  async function handleReject(business: any) {
     try {
-      await adminUpdateBusiness(id, { status: 'rejected' });
+      await adminUpdateBusiness(business._id || business.id, {
+        isApproved: false,
+        status: 'rejected',
+      });
       toast.success('Business rejected');
       loadBusinesses();
     } catch { toast.error('Failed to reject'); }
   }
 
-  async function toggleFeatured(id: string, featured: boolean) {
+  async function handleFeature(business: any) {
     try {
-      await adminUpdateBusiness(id, { is_featured: !featured });
-      toast.success(!featured ? 'Featured' : 'Unfeatured');
+      await adminUpdateBusiness(business._id || business.id, {
+        isFeatured: !business.isFeatured,
+      });
+      toast.success(!business.isFeatured ? 'Featured' : 'Unfeatured');
       loadBusinesses();
     } catch { toast.error('Failed to update'); }
   }
+
+  const handleDelete = async (business: any) => {
+    if (!confirm(`Delete "${business.name}"? This cannot be undone.`)) return;
+    try {
+      await api.delete(`/businesses/${business._id || business.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setBusinesses(prev => prev.filter(b => 
+        (b._id || b.id) !== (business._id || business.id)
+      ));
+      toast.success('Business deleted');
+    } catch {
+      toast.error('Failed to delete');
+    }
+  };
 
   const columns = [
     { key: 'name', label: 'Name', sortable: true, render: (row: BusinessRow) => (
@@ -81,12 +104,18 @@ export default function ManageBusinesses() {
               <div className="flex items-center gap-3">
                 {row.status === 'pending' && (
                   <>
-                    <button onClick={() => approveBusiness(row.id)} className="text-xs font-dm text-green-600 hover:underline">Approve</button>
-                    <button onClick={() => rejectBusiness(row.id)} className="text-xs font-dm text-red-600 hover:underline">Reject</button>
+                    <button onClick={() => handleApprove(row)} className="text-xs font-dm text-green-600 hover:underline">Approve</button>
+                    <button onClick={() => handleReject(row)} className="text-xs font-dm text-red-600 hover:underline">Reject</button>
                   </>
                 )}
-                <button onClick={() => toggleFeatured(row.id, row.is_featured)} className="text-xs font-dm text-brand-orange hover:underline">
-                  {row.is_featured ? 'Unfeature' : 'Feature'}
+                <button onClick={() => handleFeature(row)} className="text-xs font-dm text-brand-orange hover:underline">
+                  {row.isFeatured ? 'Unfeature' : 'Feature'}
+                </button>
+                <button
+                  onClick={() => handleDelete(row)}
+                  className="text-red-500 hover:underline text-sm"
+                >
+                  Delete
                 </button>
               </div>
             )}

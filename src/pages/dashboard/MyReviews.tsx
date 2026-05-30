@@ -2,17 +2,20 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MessageSquare, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { supabase } from '../../services/supabase';
 import StarRating from '../../components/ui/StarRating';
 import { timeAgo } from '../../utils/timeAgo';
+import { deleteReview, fetchMyReviews } from '../../services/api';
 
 interface MyReview {
+  _id?: string;
   id: string;
   rating: number;
   title: string;
   comment: string;
+  createdAt?: string;
   created_at: string;
-  businesses: { name: string; slug: string } | null;
+  business?: { name: string; slug: string } | null;
+  businesses?: { name: string; slug: string } | null;
 }
 
 export default function MyReviews() {
@@ -21,29 +24,26 @@ export default function MyReviews() {
 
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('reviews')
-        .select('*, businesses!business_id(name, slug)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) console.error(error);
-      else setReviews((data ?? []) as MyReview[]);
-      setLoading(false);
+      try {
+        const data = await fetchMyReviews();
+        setReviews((data ?? []) as MyReview[]);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
 
   async function handleDelete(reviewId: string) {
     if (!confirm('Delete this review?')) return;
-    const { error } = await supabase.from('reviews').delete().eq('id', reviewId);
-    if (error) toast.error('Failed to delete');
-    else {
-      setReviews(prev => prev.filter(r => r.id !== reviewId));
+    try {
+      await deleteReview(reviewId);
+      setReviews(prev => prev.filter(r => r.id !== reviewId && r._id !== reviewId));
       toast.success('Review deleted');
+    } catch {
+      toast.error('Failed to delete');
     }
   }
 
@@ -71,14 +71,14 @@ export default function MyReviews() {
         ) : (
           <div className="divide-y divide-surface-3">
             {reviews.map(rev => (
-              <div key={rev.id} className="py-4">
+              <div key={rev._id || rev.id} className="py-4">
                 <div className="flex items-start justify-between">
                   <div>
                     <Link
-                      to={`/businesses/${rev.businesses?.slug}`}
+                      to={`/businesses/${rev.business?.slug || rev.businesses?.slug}`}
                       className="font-playfair text-base font-semibold text-brand-dark hover:text-brand-orange transition-colors"
                     >
-                      {rev.businesses?.name || 'Unknown Business'}
+                      {rev.business?.name || rev.businesses?.name || 'Unknown Business'}
                     </Link>
                     <div className="mt-1">
                       <StarRating rating={rev.rating} size="sm" showValue={false} />
@@ -87,10 +87,10 @@ export default function MyReviews() {
                       <p className="font-dm font-semibold text-sm text-txt-primary mt-1">{rev.title}</p>
                     )}
                     <p className="font-dm text-sm text-txt-secondary mt-1">{rev.comment}</p>
-                    <span className="font-mono text-[10px] text-brand-muted">{timeAgo(rev.created_at)}</span>
+                    <span className="font-mono text-[10px] text-brand-muted">{timeAgo(rev.createdAt || rev.created_at)}</span>
                   </div>
                   <button
-                    onClick={() => handleDelete(rev.id)}
+                    onClick={() => handleDelete(rev._id || rev.id)}
                     className="p-2 text-brand-muted hover:text-red-500 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />

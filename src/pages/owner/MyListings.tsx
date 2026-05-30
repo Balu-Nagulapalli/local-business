@@ -55,26 +55,26 @@ export default function MyListings() {
           </div>
         ) : (
           <div className="space-y-3">
-            {listings.map(biz => (
-              <div key={biz._id || biz.id} className="bg-white border border-surface-3 rounded-lg p-5 flex items-center justify-between">
+            {listings.map(business => (
+              <div key={business._id || business.id} className="bg-white border border-surface-3 rounded-lg p-5 flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3">
                     <h3 className="font-playfair text-lg font-semibold text-brand-dark truncate">
-                      {biz.name}
+                      {business.name}
                     </h3>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${statusColor[biz.status] || ''}`}>
-                      {biz.status}
+                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded ${statusColor[business.status] || ''}`}>
+                      {business.status}
                     </span>
                   </div>
                   <div className="flex items-center gap-4 mt-1.5">
-                    <StarRating rating={biz.avg_rating} size="sm" reviewCount={biz.total_reviews} />
+                    <StarRating rating={business.avg_rating} size="sm" reviewCount={business.total_reviews} />
                     <span className="font-mono text-xs text-brand-muted flex items-center gap-1">
-                      <Eye className="w-3 h-3" /> {biz.total_views} views
+                      <Eye className="w-3 h-3" /> {business.total_views} views
                     </span>
                   </div>
                 </div>
                 <Link
-                  to={`/owner/listings/${biz.id}/edit`}
+                  to={`/owner/listings/${business._id || business.id}/edit`}
                   className="flex items-center gap-1 text-sm font-dm text-brand-orange hover:underline ml-4"
                 >
                   <Edit3 className="w-4 h-4" /> Edit

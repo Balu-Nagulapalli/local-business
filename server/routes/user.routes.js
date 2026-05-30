@@ -56,6 +56,16 @@ router.post('/saved/:businessId', verifyToken, async (req, res, next) => {
 
 router.get('/', verifyToken, requireRole('admin'), getAll);
 router.put('/profile', verifyToken, updateProfile);
+router.put('/:id', verifyToken, requireRole('admin'), async (req, res, next) => {
+	try {
+		const user = await User.findByIdAndUpdate(
+			req.params.id,
+			req.body,
+			{ new: true }
+		).select('-passwordHash');
+		res.json(user);
+	} catch (err) { next(err); }
+});
 router.delete('/:id', verifyToken, requireRole('admin'), remove);
 
 module.exports = router;

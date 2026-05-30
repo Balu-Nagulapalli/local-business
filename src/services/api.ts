@@ -10,6 +10,8 @@ api.interceptors.request.use((config: any) => {
   return config;
 });
 
+export default api;
+
 export interface CategoryRow {
   _id: string;
   id: string;
@@ -198,6 +200,11 @@ export async function fetchOwnerBusinesses(): Promise<BusinessRow[]> {
 
 export async function fetchReviews(businessId: string): Promise<ReviewRow[]> {
   const { data } = await api.get(`/reviews/business/${businessId}`);
+  return data;
+}
+
+export async function fetchMyReviews(): Promise<ReviewRow[]> {
+  const { data } = await api.get('/reviews/user/my');
   return data;
 }
 

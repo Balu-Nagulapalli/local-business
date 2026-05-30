@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
-import { fetchAllUsers, adminUpdateUser } from '../../services/api';
+import api, { fetchAllUsers, adminUpdateUser } from '../../services/api';
 import type { ProfileRow } from '../../services/api';
 import DataTable from '../../components/admin/DataTable';
 
@@ -22,21 +23,42 @@ export default function ManageUsers() {
 
   useEffect(() => { loadUsers(); }, [loadUsers]);
 
-  async function toggleActive(id: string, isActive: boolean) {
+  async function toggleActive(user: any) {
     try {
-      await adminUpdateUser(id, { is_active: !isActive });
+      const userId = user._id || user.id;
+      const isActive = user.isActive ?? user.is_active ?? true;
+      await axios.put(
+        `/api/users/${userId}`,
+        { isActive: !isActive },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
       toast.success(!isActive ? 'User activated' : 'User deactivated');
       loadUsers();
     } catch { toast.error('Failed to update'); }
   }
 
-  async function changeRole(id: string, role: string) {
+  async function changeRole(user: any, role: string) {
     try {
-      await adminUpdateUser(id, { role });
+      await adminUpdateUser(user._id || user.id, { role });
       toast.success(`Role changed to ${role}`);
       loadUsers();
     } catch { toast.error('Failed to change role'); }
   }
+
+  const handleDelete = async (user: any) => {
+    if (!confirm(`Delete user "${user.name}"? This cannot be undone.`)) return;
+    try {
+      await api.delete(`/users/${user._id || user.id}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setUsers(prev => prev.filter(u => 
+        (u._id || u.id) !== (user._id || user.id)
+      ));
+      toast.success('User deleted');
+    } catch {
+      toast.error('Failed to delete');
+    }
+  };
 
   const columns = [
     { key: 'name', label: 'Name', sortable: true },
@@ -44,7 +66,7 @@ export default function ManageUsers() {
     { key: 'role', label: 'Role', sortable: true, render: (row: ProfileRow) => (
       <select
         value={row.role}
-        onChange={e => changeRole(row.id, e.target.value)}
+        onChange={e => changeRole(row, e.target.value)}
         className="text-xs font-mono bg-surface-2 border border-surface-3 rounded px-2 py-1"
         onClick={e => e.stopPropagation()}
       >
@@ -54,8 +76,8 @@ export default function ManageUsers() {
       </select>
     )},
     { key: 'is_active', label: 'Status', sortable: true, render: (row: ProfileRow) => (
-      <span className={`font-mono text-xs ${row.is_active ? 'text-green-600' : 'text-red-600'}`}>
-        {row.is_active ? 'active' : 'inactive'}
+      <span className={`font-mono text-xs ${(row.isActive ?? row.is_active ?? true) ? 'text-green-600' : 'text-red-500'}`}>
+        {(row.isActive ?? row.is_active ?? true) ? 'active' : 'inactive'}
       </span>
     )},
   ];
@@ -76,12 +98,20 @@ export default function ManageUsers() {
             columns={columns}
             data={users}
             actions={(row) => (
-              <button
-                onClick={() => toggleActive(row.id, row.is_active)}
-                className={`text-xs font-dm hover:underline ${row.is_active ? 'text-red-600' : 'text-green-600'}`}
-              >
-                {row.is_active ? 'Deactivate' : 'Activate'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => toggleActive(row)}
+                  className={`text-xs font-dm hover:underline ${row.is_active ? 'text-red-600' : 'text-green-600'}`}
+                >
+                  {row.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  onClick={() => handleDelete(row)}
+                  className="text-red-500 hover:underline text-sm ml-2"
+                >
+                  Delete
+                </button>
+              </div>
             )}
           />
         )}

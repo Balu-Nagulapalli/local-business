@@ -9,7 +9,7 @@ interface BusinessForm {
   name: string;
   tagline: string;
   description: string;
-  category_id: string;
+  category: string;
   price_range: string;
   street: string;
   area: string;
@@ -41,7 +41,7 @@ export default function AddBusiness() {
         name: vals.name,
         tagline: vals.tagline,
         description: vals.description,
-        category_id: vals.category_id,
+        category: vals.category,
         price_range: vals.price_range || '₹',
         address: {
           street: vals.street,
@@ -88,9 +88,9 @@ export default function AddBusiness() {
               </div>
               <div>
                 <label className="text-xs font-mono text-brand-muted uppercase tracking-wider">Category *</label>
-                <select {...register('category_id', { required: true })} className="w-full mt-1 px-3 py-2.5 text-sm font-dm bg-surface-2 border border-surface-3 rounded focus:outline-none focus:border-brand-orange/50">
+                <select {...register('category', { required: true })} className="w-full mt-1 px-3 py-2.5 text-sm font-dm bg-surface-2 border border-surface-3 rounded focus:outline-none focus:border-brand-orange/50">
                   <option value="">Select category</option>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {categories.map(cat => <option key={cat._id || cat.id} value={cat._id || cat.id}>{cat.name}</option>)}
                 </select>
               </div>
               <div>
